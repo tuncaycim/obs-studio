@@ -276,9 +276,8 @@ static obs_properties_t *amf_properties_internal(bool hevc)
 				    OBS_COMBO_TYPE_LIST,
 				    OBS_COMBO_FORMAT_STRING);
 
-#define add_preset(val)                                                       \
-	obs_property_list_add_string(p, obs_module_text("NVENC.Preset." val), \
-				     val)
+#define add_preset(val) \
+	obs_property_list_add_string(p, obs_module_text("AMF.Preset." val), val)
 	add_preset("quality");
 	add_preset("balanced");
 	add_preset("speed");
