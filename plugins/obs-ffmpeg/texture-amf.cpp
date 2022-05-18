@@ -63,8 +63,6 @@ struct adapter_caps {
 
 /* ------------------------------------------------------------------------- */
 
-class obs_amf_trace_writer;
-static std::unique_ptr<obs_amf_trace_writer> amf_trace_writer;
 static std::map<uint32_t, adapter_caps> caps;
 static bool h264_supported = false;
 static AMFFactory *amf_factory = nullptr;
@@ -961,22 +959,6 @@ static void register_hevc()
 /* ========================================================================= */
 /* Global Stuff                                                              */
 
-class obs_amf_trace_writer : public amf::AMFTraceWriter {
-public:
-	void AMF_CDECL_CALL Write(const wchar_t *scope,
-				  const wchar_t *text) override
-	{
-#if DEBUG_AMF_STUFF
-		blog(LOG_DEBUG, "[AMF] [%ls] %ls", scope, text);
-#else
-		(void)scope;
-		(void)text;
-#endif
-	}
-
-	void AMF_CDECL_CALL Flush() override {}
-};
-
 extern "C" void amf_load(void)
 try {
 	AMF_RESULT res;
@@ -1067,11 +1049,10 @@ try {
 	if (res != AMF_OK)
 		throw amf_error("AMFQueryVersion failed", res);
 
-	amf_trace_writer.reset(new obs_amf_trace_writer);
-	amf_trace->RegisterWriter(L"obs_amf_trace_writer",
-				  amf_trace_writer.get(), true);
+#ifndef DEBUG_AMF_STUFF
 	amf_trace->EnableWriter(AMF_TRACE_WRITER_DEBUG_OUTPUT, false);
 	amf_trace->EnableWriter(AMF_TRACE_WRITER_CONSOLE, false);
+#endif
 
 	/* ----------------------------------- */
 	/* Register encoders                   */
