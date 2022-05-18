@@ -355,11 +355,17 @@ bool obs_module_load(void)
 			obs_register_encoder(&hevc_nvenc_encoder_info);
 #endif
 	}
+
+#ifdef _WIN32
 	amf_load();
-	obs_register_encoder(&ffmpeg_amf_avc_encoder_info);
-#if ENABLE_HEVC
-	obs_register_encoder(&ffmpeg_amf_hevc_encoder_info);
 #endif
+
+	register_encoder_if_available(&ffmpeg_amf_avc_encoder_info, "h264_amf");
+#if ENABLE_HEVC
+	register_encoder_if_available(&ffmpeg_amf_hevc_encoder_info,
+				      "hevc_amf");
+#endif
+
 #if !defined(_WIN32) && defined(LIBAVUTIL_VAAPI_AVAILABLE)
 	if (vaapi_supported()) {
 		blog(LOG_INFO, "FFMPEG VAAPI supported");
@@ -376,12 +382,12 @@ bool obs_module_load(void)
 
 void obs_module_unload(void)
 {
-	amf_unload();
 #if ENABLE_FFMPEG_LOGGING
 	obs_ffmpeg_unload_logging();
 #endif
 
 #ifdef _WIN32
+	amf_unload();
 	jim_nvenc_unload();
 #endif
 }
