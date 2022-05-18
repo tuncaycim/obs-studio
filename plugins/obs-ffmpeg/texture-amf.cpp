@@ -1070,6 +1070,8 @@ try {
 	amf_trace_writer.reset(new obs_amf_trace_writer);
 	amf_trace->RegisterWriter(L"obs_amf_trace_writer",
 				  amf_trace_writer.get(), true);
+	amf_trace->EnableWriter(AMF_TRACE_WRITER_DEBUG_OUTPUT, false);
+	amf_trace->EnableWriter(AMF_TRACE_WRITER_CONSOLE, false);
 
 	/* ----------------------------------- */
 	/* Register encoders                   */
